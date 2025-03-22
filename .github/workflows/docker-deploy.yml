@@ -19,7 +19,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build Docker image
-      run: docker build -t <dockerhub-username>/<image-name>:latest .
+      run: docker build -t davoodazarirad/koyeb-html-test:latest .
 
     - name: Push Docker image to DockerHub
-      run: docker push <dockerhub-username>/<image-name>:latest
+      run: docker push davoodazarirad/koyeb-html-test:latest
