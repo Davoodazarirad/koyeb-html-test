@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: koyeb-html-test
+  labels:
+    app: koyeb-html-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: koyeb-html-test
+  template:
+    metadata:
+      labels:
+        app: koyeb-html-test
+    spec:
+      containers:
+        - name: html
+          image: davoodazarirad/koyeb-html-test:latest
+          ports:
+            - containerPort: 80
