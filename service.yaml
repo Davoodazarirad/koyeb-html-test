@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: koyeb-html-test-service
+  labels:
+    app: koyeb-html-test
+spec:
+  selector:
+    app: koyeb-html-test
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
