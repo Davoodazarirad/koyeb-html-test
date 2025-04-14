@@ -17,6 +17,6 @@ spec:
       containers:
         - name: html
           image: davoodazarirad/koyeb-html-test:latest
-          imagePullPolicy: Always  
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
