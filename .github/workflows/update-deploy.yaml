@@ -20,8 +20,11 @@ jobs:
           sed -i "s|build-date: .*|build-date: ${date}|" deployment.yaml
 
       - name: Commit & Push
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git commit -am "🚀 Update build-date to trigger ArgoCD"
-          git push
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
+          git commit -am "🔁 Update build-date to trigger ArgoCD"
+          git push origin HEAD
