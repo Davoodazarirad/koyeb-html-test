@@ -12,6 +12,8 @@ spec:
       labels:
         app: koyeb-html-test
       annotations:
+        build-date: "REPLACE_ME"
+      annotations:
         deploy-time: "{{ .Values.deployTime | default \"manual-update\" }}"
     spec:
       containers:
