@@ -28,7 +28,7 @@ jobs:
           git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/Davoodazarirad/koyeb-html-test.git
           git add deployment.yaml
           git commit -m "Update build-date to trigger ArgoCD"
-          - name: Push changes
-            run: |
-              git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Davoodazarirad/koyeb-html-test.git HEAD:main
+      - name: Push changes
+        run: |
+            git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Davoodazarirad/koyeb-html-test.git HEAD:main
           
