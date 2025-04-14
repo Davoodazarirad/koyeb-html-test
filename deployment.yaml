@@ -11,6 +11,7 @@ spec:
     metadata:
       labels:
         app: koyeb-html-test
+        build-date: 2025-01-01T00:00:00Z
       annotations:
         build-date: "REPLACE_ME"
       annotations:
