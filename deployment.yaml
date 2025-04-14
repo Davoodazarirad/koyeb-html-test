@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: koyeb-html-test
+  labels:
+    app: koyeb-html-test
 spec:
   replicas: 1
   selector:
@@ -11,15 +13,10 @@ spec:
     metadata:
       labels:
         app: koyeb-html-test
-        build-date: 2025-01-01T00:00:00Z
-      annotations:
-        build-date: "REPLACE_ME"
-      annotations:
-        deploy-time: "{{ .Values.deployTime | default \"manual-update\" }}"
+        build-date: "20240101000000"  # مقدار پیش‌فرض که در pipeline جایگزین میشه
     spec:
       containers:
-        - name: html
+        - name: koyeb-html-test
           image: davoodazarirad/koyeb-html-test:latest
-          imagePullPolicy: Always
           ports:
             - containerPort: 80
