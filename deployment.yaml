@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: koyeb-html-test
-  labels:
-    app: koyeb-html-test
 spec:
   replicas: 1
   selector:
@@ -13,6 +11,8 @@ spec:
     metadata:
       labels:
         app: koyeb-html-test
+      annotations:
+        deploy-time: "{{ .Values.deployTime | default \"manual-update\" }}"
     spec:
       containers:
         - name: html
