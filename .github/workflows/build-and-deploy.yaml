@@ -18,7 +18,7 @@ jobs:
         mkdir -p ~/.kube
         echo "${{ secrets.KUBECONFIG_BASE64 }}" | base64 -d > ~/.kube/config
 
-    - name: Apply Kaniko Job Manifest
+    - name: Apply Kaniko Job
       run: |
         kubectl delete job kaniko-build-job --ignore-not-found
-        envsubst < .github/k8s/kaniko-build-job.yaml | kubectl apply -f -
+        kubectl apply -f .github/k8s/kaniko-build-job.yaml
