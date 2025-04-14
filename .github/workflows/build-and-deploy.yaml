@@ -1,0 +1,24 @@
+name: Build and Deploy with Kaniko
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Kubeconfig
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.KUBECONFIG_BASE64 }}" | base64 -d > ~/.kube/config
+
+    - name: Apply Kaniko Job Manifest
+      run: |
+        kubectl delete job kaniko-build-job --ignore-not-found
+        envsubst < .github/k8s/kaniko-build-job.yaml | kubectl apply -f -
