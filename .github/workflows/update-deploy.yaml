@@ -1,34 +1,33 @@
 name: Update Deployment to Trigger ArgoCD
 
 on:
-  workflow_run:
-    workflows: ["Build and Push Docker Image"]
-    types:
-      - completed
+  workflow_dispatch:
+  push:
+    paths:
+      - index.html
 
 jobs:
   update-deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set build-date
         run: |
-          date=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          sed -i "s|build-date: .*|build-date: ${date}|" deployment.yaml
+          DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "Updating build date to $DATE"
+          sed -i "s|build-date: .*|build-date: $DATE|" deployment.yaml
+          sed -i "s|build-date: \".*\"|build-date: \"$DATE\"|" deployment.yaml
 
-      - name: Commit & Push
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Setup Git identity
         run: |
           git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/Davoodazarirad/koyeb-html-test.git
-          git add deployment.yaml
-          git commit -m "Update build-date to trigger ArgoCD"
-      - name: Push changes
+          git config user.email "github-actions@github.com"
+
+      - name: Commit & Push
         run: |
-            git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Davoodazarirad/koyeb-html-test.git HEAD:main
-          
+          git add deployment.yaml
+          git commit -m "Update build-date to trigger ArgoCD" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Davoodazarirad/koyeb-html-test.git HEAD:main
