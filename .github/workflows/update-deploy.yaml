@@ -3,32 +3,31 @@ name: Update Deployment to Trigger ArgoCD
 on:
   push:
     paths:
-      - index.html
-      - .github/workflows/update-deploy.yaml
+      - 'index.html'
 
 jobs:
   update-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Set build-date
-        run: echo "BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
+        run: echo "BUILD_DATE=$(date -u +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
 
       - name: Update build-date in deployment
         run: |
-          sed -i "s/build-date:.*/build-date: ${BUILD_DATE}/" deployment.yaml
-          sed -i "s/deploy-time:.*/deploy-time: ${BUILD_DATE}/" deployment.yaml
+          sed -i 's/build-date: "[^"]*"/build-date: "'$BUILD_DATE'"/' deployment.yaml
+
+      - name: Setup Git identity
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
 
       - name: Commit & Push changes
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
           git add deployment.yaml
           git commit -m "Update build-date to trigger ArgoCD" || echo "No changes to commit"
-          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
-          git push origin HEAD:main
+          git push https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
