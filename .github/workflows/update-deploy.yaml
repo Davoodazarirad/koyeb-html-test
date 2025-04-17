@@ -8,17 +8,17 @@ on:
 jobs:
   update-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set build-date
-        run: echo "BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_ENV
+        id: date
+        run: echo "date=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
 
       - name: Update build-date in deployment
         run: |
-          sed -i "s/build-date:.*/build-date: \"$BUILD_DATE\"/" deployment.yaml
+          sed -i "s/build-date=.*/build-date=${{ steps.date.outputs.date }}/" deployment.yaml
 
       - name: Setup Git identity
         run: |
@@ -26,9 +26,7 @@ jobs:
           git config --global user.name "github-actions"
 
       - name: Commit & Push changes
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git add deployment.yaml
           git commit -m "Update build-date to trigger ArgoCD" || echo "No changes to commit"
-          git push https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }} HEAD:main
+          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/Davoodazarirad/koyeb-html-test.git HEAD:main
