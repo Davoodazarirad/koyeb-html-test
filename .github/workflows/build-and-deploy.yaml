@@ -2,6 +2,11 @@ name: Build and Deploy with Kaniko
 
 on:
   push:
+    paths:
+      - index.html
+      - Dockerfile
+      - .github/k8s/kaniko-build-job.yaml
+      - .github/workflows/build-and-deploy.yaml
     branches:
       - main
 
