@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: koyeb-html-test
-          image: docker.io/davoodazarirad/koyeb-html-test:build-latest
+          image: docker.io/davoodazarirad/koyeb-html-test:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
