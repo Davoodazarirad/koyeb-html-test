@@ -13,10 +13,10 @@ spec:
     metadata:
       labels:
         app: koyeb-html-test
-        build-date: "20240101000000"  # مقدار پیش‌فرض که در pipeline جایگزین میشه
     spec:
       containers:
         - name: koyeb-html-test
           image: davoodazarirad/koyeb-html-test:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
