@@ -8,23 +8,20 @@ spec:
   template:
     spec:
       containers:
-      - name: kaniko
-        image: gcr.io/kaniko-project/executor:latest
-        args:
-          - "--context=git://github.com/Davoodazarirad/koyeb-html-test.git#main"
-          - "--dockerfile=Dockerfile"
-          - "--destination=docker.io/davoodazarirad/koyeb-html-test:latest"
-          - "--insecure"
-          - "--skip-tls-verify"
-          - "--single-snapshot"
-        volumeMounts:
-        - name: docker-config
-          mountPath: /kaniko/.docker/
+        - name: kaniko
+          image: gcr.io/kaniko-project/executor:latest
+          args:
+            - "--context=git://github.com/Davoodazarirad/koyeb-html-test.git#main"
+            - "--dockerfile=Dockerfile"
+            - "--destination=docker.io/davoodazarirad/koyeb-html-test:latest"  # فقط latest
+            - "--insecure"
+            - "--skip-tls-verify"
+          volumeMounts:
+            - name: docker-config
+              mountPath: /kaniko/.docker/config.json
+              subPath: .dockerconfigjson
       restartPolicy: Never
       volumes:
-      - name: docker-config
-        secret:
-          secretName: dockerhub-secret
-          items:
-            - key: .dockerconfigjson
-              path: config.json
+        - name: docker-config
+          secret:
+            secretName: dockerhub-secret
