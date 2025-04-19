@@ -16,12 +16,15 @@ spec:
           - "--destination=docker.io/davoodazarirad/koyeb-html-test:latest"
           - "--insecure"
           - "--skip-tls-verify"
+          - "--single-snapshot"
         volumeMounts:
         - name: docker-config
-          mountPath: /kaniko/.docker/config.json
-          subPath: .dockerconfigjson
+          mountPath: /kaniko/.docker/
       restartPolicy: Never
       volumes:
       - name: docker-config
         secret:
           secretName: dockerhub-secret
+          items:
+            - key: .dockerconfigjson
+              path: config.json
