@@ -15,8 +15,8 @@ spec:
         app: koyeb-html-test
     spec:
       containers:
-        - name: koyeb-html-test
-          image: docker.io/davoodazarirad/koyeb-html-test:latest
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 80
+      - name: koyeb-html-test
+        image: docker.io/davoodazarirad/koyeb-html-test:latest  # این خط با تگ‌های جدید تغییر خواهد کرد
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
