@@ -8,36 +8,26 @@ on:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Docker Build Tag
-      id: vars
-      run: echo "IMAGE_TAG=build-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_ENV
+      - name: Set up Docker Build Tag
+        id: tag
+        run: echo "DOCKER_TAG=build-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_ENV
 
-    - name: Set up Kubeconfig
-      run: |
-        mkdir -p ~/.kube
-        echo "${{ secrets.KUBECONFIG_BASE64 }}" | base64 -d > ~/.kube/config
+      - name: Set up Kubectl
+        uses: azure/setup-kubectl@v1
 
-    - name: Build and Push Docker image
-      run: |
-        docker build -t docker.io/davoodazarirad/koyeb-html-test:${{ env.IMAGE_TAG }} .
-        echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-        docker push docker.io/davoodazarirad/koyeb-html-test:${{ env.IMAGE_TAG }}
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-    - name: Update Deployment YAML
-      run: |
-        sed -i "s|image: docker.io/davoodazarirad/koyeb-html-test:.*|image: docker.io/davoodazarirad/koyeb-html-test:${{ env.IMAGE_TAG }}|g" deployment.yaml
-        git config --global user.email "you@example.com"
-        git config --global user.name "Your Name"
-        git add deployment.yaml
-        git commit -m "Update deployment to use image ${{ env.IMAGE_TAG }}"
-        git push
+      - name: Build and Push Docker image
+        run: |
+          docker build -t docker.io/davoodazarirad/koyeb-html-test:${{ env.DOCKER_TAG }} .
+          docker push docker.io/davoodazarirad/koyeb-html-test:${{ env.DOCKER_TAG }}
 
-    - name: Apply Kaniko Job
-      run: |
-        kubectl delete job kaniko-build-job --ignore-not-found
-        kubectl apply -f .github/k8s/kaniko-build-job.yaml
+      - name: Apply Kubernetes Deployment
+        run: |
+          kubectl set image deployment/koyeb-html-test koyeb-html-test=docker.io/davoodazarirad/koyeb-html-test:${{ env.DOCKER_TAG }} --record
+          kubectl rollout status deployment/koyeb-html-test
