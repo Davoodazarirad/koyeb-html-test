@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: koyeb-html-test
-          image: docker.io/davoodazarirad/koyeb-html-test:{{TAG}}
+          image: docker.io/davoodazarirad/koyeb-html-test:${GITHUB_SHA}
           ports:
             - containerPort: 80
