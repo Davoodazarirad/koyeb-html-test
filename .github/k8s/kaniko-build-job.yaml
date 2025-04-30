@@ -1,8 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: kaniko-build-job
-  namespace: default
+  name: kaniko-build
 spec:
   backoffLimit: 0
   template:
@@ -11,15 +10,14 @@ spec:
         - name: kaniko
           image: gcr.io/kaniko-project/executor:latest
           args:
-            - "--context=git://github.com/Davoodazarirad/koyeb-html-test.git#main"
             - "--dockerfile=Dockerfile"
-            - "--destination=docker.io/davoodazarirad/koyeb-html-test:latest"  # فقط latest
+            - "--context=git://github.com/Davoodazarirad/koyeb-html-test.git#refs/heads/main"
+            - "--destination=docker.io/davoodazarirad/koyeb-html-test:latest"
             - "--insecure"
             - "--skip-tls-verify"
           volumeMounts:
             - name: docker-config
-              mountPath: /kaniko/.docker/config.json
-              subPath: .dockerconfigjson
+              mountPath: /kaniko/.docker/
       restartPolicy: Never
       volumes:
         - name: docker-config
