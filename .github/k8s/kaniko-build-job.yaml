@@ -1,23 +1,23 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: kaniko-build
+  generateName: kaniko-build-
 spec:
   template:
     spec:
-      restartPolicy: Never
       containers:
         - name: kaniko
           image: gcr.io/kaniko-project/executor:latest
           args:
-            - "--dockerfile=Dockerfile"
-            - "--context=git://github.com/Davoodazarirad/koyeb-html-test.git#refs/heads/main"
-            - "--destination=docker.io/davoodazarirad/koyeb-html-test:${GITHUB_SHA}"
-            - "--insecure"
-            - "--skip-tls-verify"
+            - --dockerfile=Dockerfile
+            - --context=git://github.com/Davoodazarirad/koyeb-html-test.git#refs/heads/main
+            - --destination=docker.io/davoodazarirad/koyeb-html-test:${GITHUB_SHA}
+            - --insecure
+            - --skip-tls-verify
           volumeMounts:
             - name: docker-config
               mountPath: /kaniko/.docker/
+      restartPolicy: Never
       volumes:
         - name: docker-config
           secret:
