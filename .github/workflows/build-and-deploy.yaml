@@ -4,20 +4,34 @@ on:
   push:
     branches:
       - main
+    paths:
+      - '**.html'
+      - 'Dockerfile'
+      - '.github/k8s/kaniko-build-job.yaml'
+      - '.github/k8s/deployment.yaml'
 
 jobs:
-  trigger-kaniko-job:
-    name: Trigger Kaniko Job on K8s
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Set up Kubeconfig
-        run: |
-          echo "${{ secrets.KUBECONFIG }}" | base64 --decode > kubeconfig.yaml
+        run: echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
 
-      - name: Apply Kaniko Build Job
+      - name: Trigger Kaniko Build Job
         run: |
           kubectl --kubeconfig=kubeconfig.yaml apply -f .github/k8s/kaniko-build-job.yaml
+          
+      - name: Wait for Kaniko job to complete
+        run: |
+          kubectl --kubeconfig=kubeconfig.yaml wait --for=condition=complete job -l job-name in (kubectl get jobs --sort-by=.metadata.creationTimestamp -o=jsonpath='{.items[-1:].metadata.name}') --timeout=90s
+          
+      - name: Update Deployment to Trigger ArgoCD
+        run: |
+          sed -i "s|koyeb-html-test:.*|koyeb-html-test:${GITHUB_SHA}|g" .github/k8s/deployment.yaml
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git commit -am "Update deployment.yaml with tag ${GITHUB_SHA}"
+          git push
