@@ -3,7 +3,6 @@ kind: Job
 metadata:
   name: kaniko-build-job
 spec:
-  backoffLimit: 0
   template:
     spec:
       containers:
@@ -12,7 +11,7 @@ spec:
           args:
             - "--dockerfile=Dockerfile"
             - "--context=git://github.com/Davoodazarirad/koyeb-html-test.git#refs/heads/main"
-            - "--destination=docker.io/davoodazarirad/koyeb-html-test:${GITHUB_SHA}"
+            - "--destination=docker.io/davoodazarirad/koyeb-html-test:${{ github.sha }}"
             - "--insecure"
             - "--skip-tls-verify"
           volumeMounts:
