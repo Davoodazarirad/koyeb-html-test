@@ -20,4 +20,4 @@ jobs:
 
       - name: Apply Kaniko Build Job
         run: |
-          kubectl --kubeconfig=kubeconfig.yaml apply -f .github/kaniko-build-job.yaml
+          kubectl --kubeconfig=kubeconfig.yaml apply -f .github/k8s/kaniko-build-job.yaml
