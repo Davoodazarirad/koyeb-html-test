@@ -8,27 +8,27 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+    - name: Checkout repo
+      uses: actions/checkout@v3
 
-      - name: Set up Kubeconfig
-        run: |
-          echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
+    - name: Set up Kubeconfig
+      run: |
+        echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
 
-      - name: Delete Previous Job (if any)
-        run: |
-          kubectl --kubeconfig=kubeconfig.yaml delete job kaniko-build-job --ignore-not-found=true || true
+    - name: Delete Previous Job (if any)
+      run: |
+        kubectl --kubeconfig=kubeconfig.yaml delete job kaniko-build-job --ignore-not-found
 
-      - name: Trigger Kaniko Build Job
-        run: |
-          kubectl --kubeconfig=kubeconfig.yaml create -f .github/k8s/kaniko-build-job.yaml
+    - name: Trigger Kaniko Build Job
+      run: |
+        kubectl --kubeconfig=kubeconfig.yaml create -f .github/k8s/kaniko-build-job.yaml
 
-      - name: Wait for Kaniko job to complete
-        run: |
-          kubectl --kubeconfig=kubeconfig.yaml wait --for=condition=complete --timeout=300s job/kaniko-build-job
+    - name: Wait for Kaniko job to complete
+      run: |
+        kubectl --kubeconfig=kubeconfig.yaml wait --for=condition=complete --timeout=300s job/kaniko-build-job
 
-      - name: Update Deployment to Trigger ArgoCD
-        run: |
-          kubectl --kubeconfig=kubeconfig.yaml patch deployment koyeb-html-test \
-            -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-build-timestamp\":\"$(date +%s)\"}}}}}"
+    - name: Update Deployment to Trigger ArgoCD
+      run: |
+        kubectl --kubeconfig=kubeconfig.yaml apply -f .github/k8s/deployment.yaml
